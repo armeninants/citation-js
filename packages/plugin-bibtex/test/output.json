@@ -1,96 +1,81 @@
 {
   "bibtex": {
-    "plain text": [
-      [
-        {
-          "id": "Q23571040",
-          "type": "article-journal",
-          "title": "Correlation of the Base Strengths of Amines 1",
-          "DOI": "10.1021/ja01577a030",
-          "author": [
-            {
-              "given": "H. K.",
-              "family": "Hall"
-            }
-          ],
-          "issued": {"date-parts": [[1957, 1, 1]]},
-          "container-title": "Journal of the American Chemical Society",
-          "volume": "79",
-          "issue": "20",
-          "page": "5441-5444"
-        }
-      ],
-      "@article{Hall1957Correlation,\n\tjournal = {Journal of the American Chemical Society},\n\tdoi = {10.1021/ja01577a030},\n\tnumber = {20},\n\ttitle = {Correlation of the Base Strengths of Amines 1},\n\tvolume = {79},\n\tauthor = {Hall, H. K.},\n\tpages = {5441--5444},\n\tdate = {1957-01-01},\n\tyear = {1957},\n\tmonth = {1},\n\tday = {1},\n}"
-    ],
-    "complex title": [
-      [
-        {"title": "the bug"},
-        {"title": "?\"the bug\"?"},
-        {"title": "?!BUG?!"}
-      ],
-      "@misc{bug,\n\ttitle = {the bug},\n}\n@misc{bug,\n\ttitle = {?\"the bug\"?},\n}\n@misc{BUG,\n\ttitle = {?!BUG?!},\n}"
-    ],
-    "rich text title": [
-      [
-        {"title": "<i>i</i><b>b</b><sc>sc</sc><sup>sup</sup><sub>sub</sub>"},
-        {"title": "<span style=\"font-variant:small-caps;\">sc</span>"},
-        {"title": "<span class=\"nocase\">sc</span>"}
-      ],
-      "@misc{ibscsupsub,\n\ttitle = {\\textit{i}\\textbf{b}\\textsc{sc}\\textsuperscript{sup}\\textsubscript{sub}},\n}\n@misc{sc,\n\ttitle = {\\textsc{sc}},\n}\n@misc{sc,\n\ttitle = {{sc}},\n}"
-    ],
-    "editor": [
-      [
-        {
-          "id": "Q37108228",
-          "year-suffix": "a",
-          "DOI": "10.1109/MIS.2013.119",
-          "type": "article-journal",
-          "title": "The Rise of Wikidata",
-          "issue": "4",
-          "page": "90-95",
-          "volume": "28",
-          "issued": {"date-parts": [[2013, 1, 1]]},
-          "accessed": {"date-parts": [[2018, 7, 21]]},
-          "number-of-pages": "6",
-          "editor": [
-            {
-              "given": "James",
-              "family": "Hendler",
-              "_ordinal": -1
-            },
-            {
-              "given": "Elena",
-              "family": "Simperl",
-              "_ordinal": -1
-            }
-          ],
-          "container-title": "IEEE Intelligent Systems",
-          "author": [
-            {
-              "given": "Denny",
-              "family": "Vrandečić",
-              "_ordinal": 1
-            }
-          ]
-        }
-      ],
-      "@article{Vrandečić2013a,\n\tjournal = {IEEE Intelligent Systems},\n\tdoi = {10.1109/MIS.2013.119},\n\tnumber = {4},\n\tnumpages = {6},\n\ttitle = {The Rise of Wikidata},\n\tvolume = {28},\n\tauthor = {Vrandečić, Denny},\n\teditor = {Hendler, James and Simperl, Elena},\n\tnote = {[Online; accessed 2018-07-21]},\n\tpages = {90--95},\n\tdate = {2013-01-01},\n\tyear = {2013},\n\tmonth = {1},\n\tday = {1},\n}"
-    ],
-    "own label": [
-      [{"id": "b", "citation-label": "foo", "type": "book"}],
-      "@book{foo,\n}"
-    ],
-    "difficult label": [
-      [{"id": "b", "author": [{"given": "foo"}], "type": "book"}],
-      "@book{b,\n\tauthor = {, foo},\n}"
-    ],
-    "non-generated label": [
-      [{"id": "b", "type": "book"}],
-      "@book{b,\n}",
-      {"generateLabel": false}
-    ],
-    "safe labels": [
-      [{
+    "plain text": [[
+      {
+        "id": "Q23571040",
+        "type": "article-journal",
+        "title": "Correlation of the Base Strengths of Amines 1",
+        "DOI": "10.1021/ja01577a030",
+        "author": [{"given": "H. K.", "family": "Hall"}],
+        "issued": {"date-parts": [[1957, 1, 1]]},
+        "container-title": "Journal of the American Chemical Society",
+        "volume": "79",
+        "issue": "20",
+        "page": "5441-5444"
+      }
+    ]],
+    "complex title": [[
+      {"title": "the bug"},
+      {"title": "?\"the bug\"?"},
+      {"title": "?!BUG?!"}
+    ]],
+    "rich text title": [[
+      {"title": "<i>i</i><b>b</b><sc>sc</sc><sup>sup</sup><sub>sub</sub>"},
+      {"title": "<span style=\"font-variant:small-caps;\">sc</span>"},
+      {"title": "<span class=\"nocase\">sc</span>"},
+      {"title": "a<i>i</i>a"}
+    ]],
+    "invalid rich text title": [[
+      {"title": "<span class=\"\"subscript\"\">sub</span>"}
+    ]],
+    "unicode escapes": [[
+      {"title": "Foo —"},
+      {"title": "Bar ⸘"},
+      {"title": "Baz 🙂"}
+    ]],
+    "list with and": [[
+      {
+        "type": "book",
+        "author": [{"literal": "Organizations and Institutions"}],
+        "publisher": "Organizations and Institutions Ltd.",
+        "title": "Publication",
+        "issued": {"date-parts": [[2021]]}
+      }
+    ]],
+    "editor": [[
+      {
+        "id": "Q37108228",
+        "year-suffix": "a",
+        "DOI": "10.1109/MIS.2013.119",
+        "type": "article-journal",
+        "title": "The Rise of Wikidata",
+        "issue": "4",
+        "page": "90-95",
+        "volume": "28",
+        "issued": {"date-parts": [[2013, 1, 1]]},
+        "accessed": {"date-parts": [[2018, 7, 21]]},
+        "number-of-pages": "6",
+        "editor": [
+          {"given": "James", "family": "Hendler", "_ordinal": -1},
+          {"given": "Elena", "family": "Simperl", "_ordinal": -1}
+        ],
+        "container-title": "IEEE Intelligent Systems",
+        "author": [
+          {"given": "Denny", "family": "Vrandečić", "_ordinal": 1}
+        ]
+      }
+    ]],
+    "label": [[
+      {"id": "b", "citation-key": "foo", "type": "book"},
+      {"id": "b", "author": [{"given": "foo"}], "type": "book"},
+      {"id": "b", "type": "book"},
+      {"id": 123, "type": "book"},
+      {"id": 0, "type": "book"},
+      {"type": "book"},
+      {"id": null, "type": "book"}
+    ]],
+    "safe labels": [[
+      {
         "id": "b",
         "title": "An Introduction: \"Safety\"",
         "issued": {
@@ -98,9 +83,8 @@
         },
         "author": [{"literal": "The Foundation"}],
         "type": "book"
-      }],
-      "@book{Foundation2050Introduction,\n\ttitle = {An Introduction: \"Safety\"},\n\tauthor = {The Foundation},\n\tdate = {2050},\n\tyear = {2050},\n}"
-    ],
+      }
+    ]],
     "object": [
       [
         {
@@ -108,12 +92,7 @@
           "type": "article-journal",
           "title": "Correlation of the Base Strengths of Amines 1",
           "DOI": "10.1021/ja01577a030",
-          "author": [
-            {
-              "given": "H. K.",
-              "family": "Hall"
-            }
-          ],
+          "author": [{"given": "H. K.", "family": "Hall"}],
           "issued": {"date-parts": [[1957, 1, 1]]},
           "container-title": "Journal of the American Chemical Society",
           "volume": "79",
@@ -127,15 +106,12 @@
           "type": "article",
           "properties": {
             "author": "Hall, H. K.",
-            "doi": "10.1021/ja01577a030",
             "journal": "Journal of the American Chemical Society",
             "number": "20",
             "pages": "5441--5444",
-            "title": "Correlation of the Base Strengths of Amines 1",
+            "title": "Correlation of the {Base} {Strengths} of {Amines} 1",
             "volume": "79",
-            "date": "1957-01-01",
-            "day": "1",
-            "month": "1",
+            "month": "jan 1",
             "year": "1957"
           }
         }
@@ -143,28 +119,30 @@
       {"format": "object"}
     ]
   },
-  "bibtxt": {
-    "simple": [
-      [
-        {
-          "id": "Q23571040",
-          "type": "article-journal",
-          "title": "Correlation of the Base Strengths of Amines 1",
-          "DOI": "10.1021/ja01577a030",
-          "author": [
-            {
-              "given": "H. K.",
-              "family": "Hall"
-            }
-          ],
-          "issued": {"date-parts": [[1957, 1, 1]]},
-          "container-title": "Journal of the American Chemical Society",
-          "volume": "79",
-          "issue": "20",
-          "page": "5441-5444"
-        }
-      ],
-      "[Hall1957Correlation]\n\tjournal: Journal of the American Chemical Society\n\tdoi: 10.1021/ja01577a030\n\tnumber: 20\n\ttitle: Correlation of the Base Strengths of Amines 1\n\tvolume: 79\n\tauthor: Hall, H. K.\n\tpages: 5441--5444\n\tdate: 1957-01-01\n\tyear: 1957\n\tmonth: 1\n\tday: 1\n\ttype: article"
+  "biblatex": {
+    "no type": [
+      [{
+        "id": "Q23571040",
+        "title": "Correlation of the Base Strengths of Amines 1",
+        "author": [{"given": "H. K.", "family": "Hall"}],
+        "issued": {"date-parts": [[1957, 1, 1]]}
+      }]
     ]
+  },
+  "bibtxt": {
+    "simple": [[
+      {
+        "id": "Q23571040",
+        "type": "article-journal",
+        "title": "Correlation of the Base Strengths of Amines 1",
+        "DOI": "10.1021/ja01577a030",
+        "author": [{"given": "H. K.", "family": "Hall"}],
+        "issued": {"date-parts": [[1957, 1, 1]]},
+        "container-title": "Journal of the American Chemical Society",
+        "volume": "79",
+        "issue": "20",
+        "page": "5441-5444"
+      }
+    ]]
   }
 }

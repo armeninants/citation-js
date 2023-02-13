@@ -72,12 +72,13 @@ function splitOptions (options) {
 main(program).catch(console.error)
 
 module.exports = main
-async function main (options) {
+async function main (program) {
   process.stdin.setEncoding('utf8')
 
+  const options = program.opts()
   logger.level = options.logLevel
 
-  for (let plugin of options.plugins) {
+  for (const plugin of options.plugins) {
     try {
       require(`@citation-js/plugin-${plugin}`)
     } catch (e) {
@@ -104,14 +105,14 @@ function setConfig (newConfigs) {
     return plugins
   }, {})
 
-  for (let plugin in newConfigs) {
+  for (const plugin in newConfigs) {
     const oldConfig = plugins.config.get(plugin)
     if (oldConfig) { assignOptions(oldConfig, newConfigs[plugin]) }
   }
 }
 
 function assignOptions (object, options) {
-  for (let [path, value] of options) {
+  for (const [path, value] of options) {
     const key = path.pop()
     const assigner = path.reduce((object, key) => {
       return object[key] || (object[key] = {})
@@ -130,9 +131,9 @@ function parseValue (value) {
     return {
       false: false,
       true: true,
-      undefined: undefined,
+      undefined: undefined, // eslint-disable-line object-shorthand
       null: null,
-      NaN: NaN
+      NaN: NaN // eslint-disable-line object-shorthand
     }[value] || value
   }
 }
@@ -193,8 +194,8 @@ async function processInput (input, options) {
 
 function getPrefixedOptions (options, prefix) {
   const output = {}
-  for (let prop in options) {
-    if (prop.slice(0, prefix.length) === prefix && prop.length !== prefix) {
+  for (const prop in options) {
+    if (prop.slice(0, prefix.length) === prefix && prop.length !== prefix.length) {
       let newProp = prop.slice(prefix.length)
       newProp = newProp[0].toLowerCase() + newProp.slice(1)
       output[newProp] = options[prop]

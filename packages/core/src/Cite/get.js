@@ -1,11 +1,13 @@
-import { validateOutputOptions as validate } from './static'
-import { format as formatData } from '../plugins/output'
-import { clean as parseCsl } from '../plugins/input/csl'
+import { validateOutputOptions as validate } from './static.js'
+import { format as formatData } from '../plugins/output.js'
+import { clean as parseCsl } from '../plugins/input/csl.js'
 
 /**
  * Get a list of the data entry IDs, in the order of that list
  *
- * @memberof Cite#
+ * @access public
+ * @method getIds
+ * @memberof module:@citation-js/core.Cite#
  *
  * @return {Array<String>} List of IDs
  */
@@ -16,7 +18,9 @@ export function getIds () {
 /**
  * Get formatted data from your object.
  *
- * @memberof Cite#
+ * @access public
+ * @method format
+ * @memberof module:@citation-js/core.Cite#
  *
  * @param {String} format - format module name
  * @param {...*} options - module options (see relevant documentation)
@@ -30,11 +34,13 @@ export function format (format, ...options) {
 /**
  * Get formatted data from your object.
  *
+ * @access public
+ * @method get
+ * @memberof module:@citation-js/core.Cite#
  * @tutorial output
- * @memberof Cite#
- * @deprecated use {@link Cite#format}
+ * @deprecated use {@link module:@citation-js/core.Cite#format}
  *
- * @param {Cite~OutputOptions} [options={}] - Output options
+ * @param {module:@citation-js/core~OutputOptions} [options={}] - Output options
  *
  * @return {String|Array<Object>} The formatted data
  */
@@ -52,10 +58,11 @@ export function get (options = {}) {
   let formatOptions
 
   switch (newStyle) {
-    case 'bibliography':
+    case 'bibliography': {
       const { lang, append, prepend } = parsedOptions
       formatOptions = { template: styleFormat, lang, format: newType, append, prepend }
       break
+    }
 
     case 'data':
     case 'bibtex':

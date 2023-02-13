@@ -1,11 +1,15 @@
-import deepCopy from '../../util/deepCopy'
-import logger from '../../logger'
+import { deepCopy, upgradeCsl } from '../../util/index.js'
+import logger from '../../logger.js'
 
-import { get as getTypeInfo } from './register'
-import { type as parseType } from './type'
-import { data as parseData, dataAsync as parseDataAsync } from './data'
-import { applyGraph, removeGraph } from './graph'
+import { get as getTypeInfo } from './register.js'
+import { type as parseType } from './type.js'
+import { data as parseData, dataAsync as parseDataAsync } from './data.js'
+import { applyGraph, removeGraph } from './graph.js'
 
+/**
+ * @access private
+ * @param {Array<Object>} graph
+ */
 function prepareParseGraph (graph) {
   return graph
     // collapse continuous iterations of the same type
@@ -23,6 +27,14 @@ function prepareParseGraph (graph) {
     .join(' -> ')
 }
 
+/**
+ * @access private
+ * @memberof module:@citation-js/core.plugins.input
+ * @constructor ChainParser
+ *
+ * @param {module:@citation-js/core~InputData} input
+ * @param {module:@citation-js/core~InputOptions} options
+ */
 class ChainParser {
   constructor (input, options = {}) {
     this.options = Object.assign({
@@ -41,6 +53,12 @@ class ChainParser {
     this.iteration = 0
   }
 
+  /**
+   * After a round of data parsing, update type information and check targets.
+   *
+   * @access public
+   * @return {Boolean} Whether this is the last iteration or not
+   */
   iterate () {
     if (this.iteration !== 0) {
       const typeInfo = getTypeInfo(this.type)
@@ -67,6 +85,12 @@ class ChainParser {
     }
   }
 
+  /**
+   * Finish the iteration and return parsed data.
+   *
+   * @access public
+   * @return Array<module:@citation-js/core~CSL>
+   */
   end () {
     if (this.error) {
       logger.error('[core]', this.error.message)
@@ -76,7 +100,7 @@ class ChainParser {
         return []
       }
     } else if (this.options.target === '@csl/list+object') {
-      return this.data.map(this.options.generateGraph
+      return upgradeCsl(this.data).map(this.options.generateGraph
         ? entry => applyGraph(entry, this.graph)
         : removeGraph
       )
@@ -91,15 +115,15 @@ class ChainParser {
  *
  * @access protected
  * @method chain
- * @memberof Cite.plugins.input
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {InputData} input - input data
- * @param {Cite~InputOptions} [options] - options
+ * @param {module:@citation-js/core~InputData} input - input data
+ * @param {module:@citation-js/core~InputOptions} [options] - options
  *
- * @return {Array<CSL>} The parsed input
+ * @return {Array<module:@citation-js/core~CSL>} The parsed input
  */
 export const chain = (...args) => {
-  let chain = new ChainParser(...args)
+  const chain = new ChainParser(...args)
 
   while (chain.iterate()) {
     try {
@@ -117,11 +141,11 @@ export const chain = (...args) => {
  *
  * @access protected
  * @method chainLink
- * @memberof Cite.plugins.input
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {InputData} input - input data
+ * @param {module:@citation-js/core~InputData} input - input data
  *
- * @return {Array<CSL>} The parsed input
+ * @return {module:@citation-js/core~InputData} The parsed input
  */
 export const chainLink = (input) => {
   const type = parseType(input)
@@ -135,15 +159,15 @@ export const chainLink = (input) => {
  *
  * @access protected
  * @method chainAsync
- * @memberof Cite.plugins.input
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {InputData} input - input data
- * @param {Cite~InputOptions} [options] - options
+ * @param {module:@citation-js/core~InputData} input - input data
+ * @param {module:@citation-js/core~InputOptions} [options] - options
  *
- * @return {Promise<Array<CSL>>} The parsed input
+ * @return {Promise<Array<module:@citation-js/core~CSL>>} The parsed input
  */
 export const chainAsync = async (...args) => {
-  let chain = new ChainParser(...args)
+  const chain = new ChainParser(...args)
 
   while (chain.iterate()) {
     chain.data = await parseDataAsync(chain.data, chain.type).catch(e => { chain.error = e })
@@ -157,15 +181,15 @@ export const chainAsync = async (...args) => {
  *
  * @access protected
  * @method chainLinkAsync
- * @memberof Cite.plugins.input
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {InputData} input - The input data
+ * @param {module:@citation-js/core~InputData} input - The input data
  *
- * @return {Promise} The parsed input
+ * @return {Promise<module:@citation-js/core~InputData>} The parsed input
  */
 export const chainLinkAsync = async (input) => {
   const type = parseType(input)
-  let output = type.match(/array|object/) ? deepCopy(input) : input
+  const output = type.match(/array|object/) ? deepCopy(input) : input
 
   return parseDataAsync(output, type)
 }

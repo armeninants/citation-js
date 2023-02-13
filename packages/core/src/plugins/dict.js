@@ -1,27 +1,27 @@
 /**
  * @namespace dict
- * @memberof Cite.plugins
+ * @memberof module:@citation-js/core.plugins
  */
 
-import Register from '../util/register'
+import Register from '../util/register.js'
 
 /**
- * @typedef Cite.plugins.dict~dictName
+ * @typedef module:@citation-js/core.plugins.dict~dictName
  * @type String
  */
 
 /**
- * @typedef Cite.plugins.dict~dict
- * @type Object<Cite.plugins.dict~entryName,Cite.plugins.dict~dictEntry>
+ * @typedef module:@citation-js/core.plugins.dict~dict
+ * @type Object<module:@citation-js/core.plugins.dict~entryName,module:@citation-js/core.plugins.dict~dictEntry>
  */
 
 /**
- * @typedef Cite.plugins.dict~entryName
+ * @typedef module:@citation-js/core.plugins.dict~entryName
  * @type String
  */
 
 /**
- * @typedef Cite.plugins.dict~dictEntry
+ * @typedef module:@citation-js/core.plugins.dict~dictEntry
  * @type Array<String>
  */
 
@@ -29,14 +29,14 @@ import Register from '../util/register'
  * Validate input arguments
  *
  * @access private
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  *
- * @param {Cite.plugins.dict~dictName} name - output format name
- * @param {Cite.plugins.dict~dict} formatter - outputting function
- * @throw {TypeError} Invalid output format name
- * @throw {TypeError} Invalid formatter
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
+ * @param {module:@citation-js/core.plugins.dict~dict} formatter - outputting function
+ * @throws {TypeError} Invalid output format name
+ * @throws {TypeError} Invalid formatter
  */
-const validate = (name, dict) => {
+function validate (name, dict) {
   if (typeof name !== 'string') {
     throw new TypeError(`Invalid dict name, expected string, got ${typeof name}`)
   } else if (typeof dict !== 'object') {
@@ -53,10 +53,10 @@ const validate = (name, dict) => {
 
 /**
  * @access public
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  * @constant register
  *
- * @type Cite.util.Register
+ * @type module:@citation-js/core.util.Register
  */
 export const register = new Register({
   html: {
@@ -79,14 +79,14 @@ export const register = new Register({
  * @todo docs
  *
  * @access public
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  * @method add
  *
- * @param {Cite.plugins.dict~dictName} name - dictionary name
- * @param {Cite.plugins.dict~dict} dict - dictionary data
- * @throw {TypeError} argument validation error
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - dictionary name
+ * @param {module:@citation-js/core.plugins.dict~dict} dict - dictionary data
+ * @throws {TypeError} argument validation error
  */
-export const add = (name, dict) => {
+export function add (name, dict) {
   validate(name, dict)
   register.set(name, dict)
 }
@@ -95,12 +95,12 @@ export const add = (name, dict) => {
  * Remove dictionary.
  *
  * @access public
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  * @method remove
  *
- * @param {Cite.plugins.dict~dictName} name - output format name
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
  */
-export const remove = (name) => {
+export function remove (name) {
   register.remove(name)
 }
 
@@ -108,13 +108,13 @@ export const remove = (name) => {
  * Check if dictionary plugin exists.
  *
  * @access public
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  * @method has
  *
- * @param {Cite.plugins.dict~dictName} name - output format name
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
  * @return {Boolean} register has plugin
  */
-export const has = (name) => {
+export function has (name) {
   return register.has(name)
 }
 
@@ -122,12 +122,12 @@ export const has = (name) => {
  * List dictionary plugins.
  *
  * @access public
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  * @method list
  *
  * @return {Array<String>} list of plugins
  */
-export const list = () => {
+export function list () {
   return register.list()
 }
 
@@ -135,13 +135,13 @@ export const list = () => {
  * Get dictionary data.
  *
  * @access public
- * @memberof Cite.plugins.dict
+ * @memberof module:@citation-js/core.plugins.dict
  * @method get
  *
- * @param {Cite.plugins.dict~dictName} name - output format name
- * @return {Cite.plugins.dict~dict} dictionary data
+ * @param {module:@citation-js/core.plugins.dict~dictName} name - output format name
+ * @return {module:@citation-js/core.plugins.dict~dict} dictionary data
  */
-export const get = (name) => {
+export function get (name) {
   if (!register.has(name)) {
     throw new Error(`Dict "${name}" unavailable`)
   }
@@ -152,8 +152,8 @@ export const get = (name) => {
  * Object containing HTML strings for building JSON and BibTeX. Made to match citeproc, for compatibility.
  *
  * @access protected
- * @memberof Cite.plugins.dict
- * @deprecated use the new formatting dicts: {@link Cite.plugins.dict}
+ * @memberof module:@citation-js/core.plugins.dict
+ * @deprecated use the new formatting dicts: {@link module:@citation-js/core.plugins.dict}
  */
 export const htmlDict = {
   wr_start: '<div class="csl-bib-body">',
@@ -170,8 +170,8 @@ export const htmlDict = {
  * Object containing text strings for building JSON and BibTeX. Made to match citeproc, for compatibility.
  *
  * @access protected
- * @memberof Cite.plugins.dict
- * @deprecated use the new formatting dicts: {@link Cite.plugins.dict}
+ * @memberof module:@citation-js/core.plugins.dict
+ * @deprecated use the new formatting dicts: {@link module:@citation-js/core.plugins.dict}
  */
 export const textDict = {
   wr_start: '',

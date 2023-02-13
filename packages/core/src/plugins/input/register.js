@@ -1,25 +1,30 @@
-import { FormatParser } from './parser'
-import { addTypeParser, removeTypeParser } from './type'
-import { addDataParser, removeDataParser } from './data'
+import { FormatParser } from './parser.js'
+import { addTypeParser, removeTypeParser } from './type.js'
+import { addDataParser, removeDataParser } from './data.js'
 
+/**
+ * @access private
+ * @type {Object<module:@citation-js/core.plugins.input~format, Object>}
+ */
 const formats = {}
 
 /**
  * See the relevant tutorial: {@tutorial input_plugins}
  *
  * @access public
- * @memberof Cite.plugins.input
+ * @method add
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Cite.plugins.input~format} format - input format name
- * @param {Cite.plugins.input~parsers} parsers - parsers
+ * @param {module:@citation-js/core.plugins.input~format} format - input format name
+ * @param {module:@citation-js/core.plugins.input~parsers} parsers - parsers
  *
  * @tutorial input_plugins
  */
-export const add = (format, parsers) => {
-  let formatParser = new FormatParser(format, parsers)
+export function add (format, parsers) {
+  const formatParser = new FormatParser(format, parsers)
   formatParser.validate()
 
-  let index = formats[format] || (formats[format] = {})
+  const index = formats[format] || (formats[format] = {})
 
   if (formatParser.typeParser) {
     addTypeParser(format, formatParser.typeParser)
@@ -41,23 +46,25 @@ export const add = (format, parsers) => {
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method get
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Cite.plugins.input~format} format - input format name
+ * @param {module:@citation-js/core.plugins.input~format} format - input format name
  * @returns {Object} index
  */
-export const get = (format) => {
+export function get (format) {
   return formats[format]
 }
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method remove
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Cite.plugins.input~format} format - input format name
+ * @param {module:@citation-js/core.plugins.input~format} format - input format name
  */
-export const remove = (format) => {
-  let index = formats[format]
+export function remove (format) {
+  const index = formats[format]
 
   if (!index) {
     return
@@ -78,15 +85,21 @@ export const remove = (format) => {
 
 /**
  * @access public
- * @memberof Cite.plugins.input
- * @param {Cite.plugins.input~format} format - input format name
+ * @method has
+ * @memberof module:@citation-js/core.plugins.input
+ * @param {module:@citation-js/core.plugins.input~format} format - input format name
  * @returns {Boolean} input format is registered
  */
-export const has = (format) => format in formats
+export function has (format) {
+  return format in formats
+}
 
 /**
  * @access public
- * @memberof Cite.plugins.input
- * @returns {Array<Cite.plugins.input~format>} input format is registered
+ * @method list
+ * @memberof module:@citation-js/core.plugins.input
+ * @returns {Array<module:@citation-js/core.plugins.input~format>} input format is registered
  */
-export const list = () => Object.keys(formats)
+export function list () {
+  return Object.keys(formats)
+}

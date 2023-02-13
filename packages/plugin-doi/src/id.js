@@ -1,18 +1,15 @@
 /**
- * @module input/doi
- */
-
-/**
  * Get DOI API URLs from DOI ID.
  *
  * @access protected
- * @method parseDoi
+ * @method parse
+ * @memberof module:@citation-js/plugin-doi.parsers.id
  *
  * @param {String} data - DOIs
  *
  * @return {Array<String>} DOI URLs
  */
-const parseDoi = data => {
+function parseDoi (data) {
   const list = Array.isArray(data) ? data : data.trim().split(/(?:\s+)/g)
   return list.map(doi => `https://doi.org/${doi}`)
 }

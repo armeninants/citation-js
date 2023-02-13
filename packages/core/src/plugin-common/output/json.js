@@ -2,9 +2,9 @@
  * @module output/json
  */
 
-import * as plugins from '../../plugins/'
-import * as util from '../../util/'
-import logger from '../../logger'
+import * as plugins from '../../plugins/index.js'
+import * as util from '../../util/index.js'
+import logger from '../../logger.js'
 
 /**
  * Append commas to every item but the last. Should unfortunately, probably be a utility.
@@ -17,7 +17,9 @@ import logger from '../../logger'
  *
  * @return {String} modified item
  */
-const appendCommas = (string, index, array) => string + (index < array.length - 1 ? ',' : '')
+function appendCommas (string, index, array) {
+  return string + (index < array.length - 1 ? ',' : '')
+}
 
 /**
  * Convert a JSON array or object to HTML.
@@ -29,7 +31,7 @@ const appendCommas = (string, index, array) => string + (index < array.length - 
  *
  * @return {String} string form
  */
-const getJsonObject = function (src, dict) {
+function getJsonObject (src, dict) {
   const isArray = Array.isArray(src)
   let entries
 
@@ -58,7 +60,7 @@ const getJsonObject = function (src, dict) {
  *
  * @return {String} string form
  */
-const getJsonValue = function (src, dict) {
+function getJsonValue (src, dict) {
   if (typeof src === 'object' && src !== null) {
     if (src.length === 0) {
       return '[]'
@@ -83,7 +85,7 @@ const getJsonValue = function (src, dict) {
  *
  * @return {String} JSON string
  */
-const getJson = function (src, dict) {
+function getJson (src, dict) {
   let entries = src.map(entry => getJsonObject(entry, dict))
   entries = entries.map(appendCommas).map(entry => dict.entry.join(entry))
   entries = entries.join('')
@@ -107,7 +109,11 @@ export /* istanbul ignore next: deprecated */ function getJsonWrapper (src) {
 }
 
 export default {
-  data (data, { type, format = type || 'text' } = {}) {
+  data (data, { type, format = type || 'text', version = '1.0.2' } = {}) {
+    if (version < '1.0.2') {
+      data = util.downgradeCsl(data)
+    }
+
     if (format === 'object') {
       return util.deepCopy(data)
     } else if (format === 'text') {
@@ -117,7 +123,11 @@ export default {
       return getJson(data, plugins.dict.get(format))
     }
   },
-  ndjson (data) {
+  ndjson (data, { version = '1.0.2' } = {}) {
+    if (version < '1.0.2') {
+      data = util.downgradeCsl(data)
+    }
+
     return data.map(entry => JSON.stringify(entry)).join('\n')
   }
 }

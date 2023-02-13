@@ -1,10 +1,9 @@
-/* global fetch */
-require('isomorphic-fetch')
+const fetch = require('node-fetch')
 
-var fs = require('fs')
+const fs = require('fs')
 
-var dois = ['10.1021/ja01577a030']
-var json = response => response.json()
+const dois = ['10.1021/ja01577a030', '10.1101/2021.08.15.21262067']
+const json = response => response.json()
 
 Promise.all(dois.map(doi => fetch('https://doi.org/' + doi, {
   headers: { Accept: 'application/vnd.citationstyles.csl+json' }

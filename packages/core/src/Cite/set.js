@@ -1,27 +1,29 @@
-import { chain as parseInput, chainAsync as parseInputAsync } from '../plugins/input/'
-import fetchId from '../util/fetchId'
+import { chain as parseInput, chainAsync as parseInputAsync } from '../plugins/input/index.js'
+import fetchId from '../util/fetchId.js'
 
 /**
  * Add an object to the array of objects
  *
- * @memberof Cite#
+ * @memberof module:@citation-js/core.Cite#
  *
- * @param {Cite~InputData} data - The data to add to your object
- * @param {Object} [options={}] - [Options](../#cite.in.options)
+ * @param {module:@citation-js/core~InputData} data - The data to add to your object
+ * @param {module:@citation-js/core~InputOptions} [options] - Options
  * @param {Boolean} [log=false] - Show this call in the log
  *
- * @return {Cite} The updated parent object
+ * @return {module:@citation-js/core.Cite} The updated parent object
  */
-const add = function (data, options = {}, log = false) {
+function add (data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save()
   }
 
   this.data.push(...parseInput(data, options))
 
-  this.data.filter(entry => !entry.hasOwnProperty('id')).forEach(entry => {
-    entry.id = fetchId(this.getIds(), 'temp_id_')
-  })
+  this.data
+    .filter(entry => !Object.prototype.hasOwnProperty.call(entry, 'id'))
+    .forEach(entry => {
+      entry.id = fetchId(this.getIds(), 'temp_id_')
+    })
 
   return this
 }
@@ -29,24 +31,26 @@ const add = function (data, options = {}, log = false) {
 /**
  * Add an object to the array of objects
  *
- * @memberof Cite#
+ * @memberof module:@citation-js/core.Cite#
  *
- * @param {Cite~InputData} data - The data to add to your object
- * @param {Object} [options={}] - [Options](../#cite.in.options)
+ * @param {module:@citation-js/core~InputData} data - The data to add to your object
+ * @param {module:@citation-js/core~InputOptions} [options] - Options
  * @param {Boolean} [log=false] - Show this call in the log
  *
- * @return {Promise<Cite>} The updated parent object
+ * @return {Promise<module:@citation-js/core.Cite>} The updated parent object
  */
-const addAsync = async function (data, options = {}, log = false) {
+async function addAsync (data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save()
   }
 
   this.data.push(...await parseInputAsync(data, options))
 
-  this.data.filter(entry => !entry.hasOwnProperty('id')).forEach(entry => {
-    entry.id = fetchId(this.getIds(), 'temp_id_')
-  })
+  this.data
+    .filter(entry => !Object.prototype.hasOwnProperty.call(entry, 'id'))
+    .forEach(entry => {
+      entry.id = fetchId(this.getIds(), 'temp_id_')
+    })
 
   return this
 }
@@ -54,15 +58,15 @@ const addAsync = async function (data, options = {}, log = false) {
 /**
  * Recreate a `Cite` object with almost any kind of data, and manipulate it with its default methods.
  *
- * @memberof Cite#
+ * @memberof module:@citation-js/core.Cite#
  *
- * @param {Cite~InputData} data - Replacement data
- * @param {Object} [options={}] - [Options](../#cite.in.options)
+ * @param {module:@citation-js/core~InputData} data - Replacement data
+ * @param {module:@citation-js/core~InputOptions} [options] - Options
  * @param {Boolean} [log=false] - Show this call in the log
  *
- * @return {Cite} The updated parent object
+ * @return {module:@citation-js/core.Cite} The updated parent object
  */
-const set = function (data, options = {}, log = false) {
+function set (data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save()
   }
@@ -74,15 +78,15 @@ const set = function (data, options = {}, log = false) {
 /**
  * Recreate a `Cite` object with almost any kind of data, and manipulate it with its default methods.
  *
- * @memberof Cite#
+ * @memberof module:@citation-js/core.Cite#
  *
- * @param {Cite~InputData} data - Replacement data
- * @param {Object} [options={}] - [Options](../#cite.in.options)
+ * @param {module:@citation-js/core~InputData} data - Replacement data
+ * @param {module:@citation-js/core~InputOptions} [options] - Options
  * @param {Boolean} [log=false] - Show this call in the log
  *
- * @return {Promise<Cite>} The updated parent object
+ * @return {Promise<module:@citation-js/core.Cite>} The updated parent object
  */
-const setAsync = async function (data, options = {}, log = false) {
+async function setAsync (data, options = {}, log = false) {
   if (options === true || log === true) {
     this.save()
   }
@@ -94,13 +98,13 @@ const setAsync = async function (data, options = {}, log = false) {
 /**
  * Reset a `Cite` object.
  *
- * @memberof Cite#
+ * @memberof module:@citation-js/core.Cite#
  *
  * @param {Boolean} [log=false] - Show this call in the log
  *
- * @return {Cite} The updated, empty parent object (except the log, the log lives)
+ * @return {module:@citation-js/core.Cite} The updated, empty parent object (except the log, the log lives)
  */
-const reset = function (log) {
+function reset (log) {
   if (log) {
     this.save()
   }

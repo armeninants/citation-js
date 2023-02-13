@@ -4,21 +4,43 @@ const { spawn } = require('child_process')
 const path = require('path')
 const assert = require('assert')
 
-const { util } = require('../src/')
+const { util } = require('../src/index.js')
+const pkg = require('../package')
 
-const userAgent = `Citation.js/${require('../package').version} Node.js/${process.version}`
+const userAgent = `Citation.js/${pkg.version} Node.js/${process.version}`
 
 function deepNotEqual (a, b) {
   if (a == null && b == null) {
-    return
+    return false
   } else if (a.constructor === Array && b.constructor === Array) {
     assert.notStrictEqual(a, b)
     a.forEach((v, i) => deepNotEqual(v, b[i]))
   } else if (a.constructor === Object && b.constructor === Object) {
     assert.notStrictEqual(a, b)
     Object.keys(a).forEach(v => deepNotEqual(v, b[v]))
+  }
+}
+
+const nodeVersion = parseInt(process.version.split('.')[0])
+function getHeaders (headers) {
+  if (nodeVersion >= 18) {
+    return {
+      accept: '*/*',
+      'accept-encoding': 'gzip, deflate',
+      'accept-language': '*',
+      connection: 'keep-alive',
+      host: 'localhost:30200',
+      'sec-fetch-mode': 'cors',
+      ...headers
+    }
   } else {
-    return
+    return {
+      accept: '*/*',
+      'accept-encoding': 'gzip,deflate',
+      connection: 'close',
+      host: 'localhost:30200',
+      ...headers
+    }
   }
 }
 
@@ -29,13 +51,7 @@ const requests = {
     ['/inspect'],
     {
       method: 'GET',
-      headers: {
-        accept: '*/*',
-        connection: 'close',
-        host: 'localhost:30200',
-        'accept-encoding': 'gzip,deflate',
-        'user-agent': userAgent
-      },
+      headers: getHeaders({ 'user-agent': userAgent }),
       body: ''
     }
   ],
@@ -48,15 +64,11 @@ const requests = {
     ],
     {
       method: 'POST',
-      headers: {
-        accept: '*/*',
-        connection: 'close',
-        host: 'localhost:30200',
-        'accept-encoding': 'gzip,deflate',
+      headers: getHeaders({
         'user-agent': userAgent,
         'content-length': '2',
         'content-type': 'application/json'
-      },
+      }),
       body: '{}'
     }
   ],
@@ -69,15 +81,11 @@ const requests = {
     ],
     {
       method: 'POST',
-      headers: {
-        accept: '*/*',
-        connection: 'close',
-        host: 'localhost:30200',
-        'accept-encoding': 'gzip,deflate',
+      headers: getHeaders({
         'user-agent': userAgent,
         'content-length': '3',
         'content-type': 'text/plain'
-      },
+      }),
       body: 'foo'
     }
   ],
@@ -133,13 +141,7 @@ const requests = {
     ],
     {
       method: 'GET',
-      headers: {
-        accept: '*/*',
-        connection: 'close',
-        host: 'localhost:30200',
-        'accept-encoding': 'gzip,deflate',
-        'user-agent': 'foo'
-      },
+      headers: getHeaders({ 'user-agent': 'foo' }),
       body: ''
     }
   ]
@@ -177,6 +179,7 @@ describe('util', function () {
 
   describe('fetchFile', function () {
     before(function (done) {
+      this.timeout(4000)
       serverProcess = spawn(process.execPath, [path.join(__dirname, 'server.js')])
       serverProcess.stderr.on('data', chunk => console.error(chunk.toString()))
       serverProcess.stdout.on('data', function (chunk) {

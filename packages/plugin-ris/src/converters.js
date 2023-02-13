@@ -1,7 +1,8 @@
 import { parse as parseDate } from '@citation-js/date'
-import TYPES from './spec/types'
+import TYPES from './spec/types.json'
 
-const ISSN_REGEX = /^\d{4}-\d{4}$/
+const ISSN_REGEX = /^\d{4}-\d{3}[0-9Xx]$/
+const DOI_REGEX = /10(?:\.[0-9]{4,})?\/[^\s]*[^\s.,]/
 const CONVERTERS = {
   ANY: {
     toTarget (...values) { return values.find(Boolean) },
@@ -42,7 +43,7 @@ const CONVERTERS = {
           case 2:
             return { family, given }
           case 1:
-            if (family.indexOf(' ') > -1) { return { family } }
+            if (family.indexOf(' ') === -1) { return { family } }
             // fall through
           default:
             return { literal: name }
@@ -50,12 +51,15 @@ const CONVERTERS = {
       })
     },
     toSource (names) {
-      return names.map(({ family, given, suffix }) => [family, given, suffix].filter(Boolean).join(', '))
+      return names.map(({ family, given, suffix, literal }) => {
+        const parts = [family, given, suffix].filter(Boolean)
+        return parts.length ? parts.join(', ') : literal
+      })
     }
   },
 
   KEYWORD: {
-    toTarget (words) { return words.join(',') },
+    toTarget (words) { words = [].concat(words); return words.join(',') },
     toSource (words) { return words.split(',') }
   },
 
@@ -66,6 +70,11 @@ const CONVERTERS = {
   TYPE: {
     toTarget (type) { return TYPES.RIS[type] },
     toSource (type) { return TYPES.CSL[type] }
+  },
+
+  DOI: {
+    toTarget (doi) { return doi.match(DOI_REGEX)[0] },
+    toSource (doi) { return doi.match(DOI_REGEX)[0] }
   }
 }
 

@@ -1,16 +1,20 @@
 /**
  * @namespace util
- * @memberof Cite
+ * @memberof module:@citation-js/core
  */
 
-import deepCopy from './deepCopy'
-import { fetchFile, fetchFileAsync, setUserAgent } from './fetchFile'
-import fetchId from './fetchId'
-import TokenStack from './stack'
-import Register from './register'
-import { Translator } from './translator'
+import { upgradeCsl, downgradeCsl } from './csl.js'
+import deepCopy from './deepCopy.js'
+import { fetchFile, fetchFileAsync, setUserAgent } from './fetchFile.js'
+import fetchId from './fetchId.js'
+import TokenStack from './stack.js'
+import Register from './register.js'
+import { Grammar } from './grammar.js'
+import { Translator } from './translator.js'
 
 export {
+  upgradeCsl,
+  downgradeCsl,
   deepCopy,
   fetchFile,
   fetchFileAsync,
@@ -18,5 +22,6 @@ export {
   fetchId,
   TokenStack,
   Register,
+  Grammar,
   Translator
 }

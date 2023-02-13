@@ -2,7 +2,7 @@
  * @module input/other
  */
 
-import logger from '../../logger'
+import logger from '../../logger.js'
 
 /**
  *
@@ -31,7 +31,7 @@ const substituters = [
  *
  * @return {Object|Array<Object>|Array<String>} The parsed object
  */
-const parseJSON = function (str) {
+function parseJSON (str) {
   if (typeof str !== 'string') {
     return JSON.parse(str)
   }

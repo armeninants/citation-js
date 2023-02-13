@@ -1,12 +1,12 @@
 /**
  * @namespace plugins
- * @memberof Cite
+ * @memberof module:@citation-js/core
  */
 
-import * as input from './input/'
-import * as output from './output'
-import * as dict from './dict'
-import * as config from './config'
+import * as input from './input/index.js'
+import * as output from './output.js'
+import * as dict from './dict.js'
+import * as config from './config.js'
 
 const registers = {
   input,
@@ -20,25 +20,25 @@ const indices = {}
 /**
  * @access public
  * @method add
- * @memberof Cite.plugins
- * @param {Cite.plugins~pluginRef} ref - plugin reference/name
- * @param {Cite.plugins~plugins} [plugins={}]
+ * @memberof module:@citation-js/core.plugins
+ * @param {module:@citation-js/core.plugins~pluginRef} ref - plugin reference/name
+ * @param {module:@citation-js/core.plugins~plugins} [plugins={}]
  */
-export const add = (ref, plugins = {}) => {
-  let mainIndex = indices[ref] = {}
+export function add (ref, plugins = {}) {
+  const mainIndex = indices[ref] = {}
 
-  for (let type in plugins) {
+  for (const type in plugins) {
     if (type === 'config') {
       mainIndex.config = { [ref]: plugins.config }
       registers.config.add(ref, plugins.config)
       continue
     }
 
-    let typeIndex = mainIndex[type] = {}
-    let typePlugins = plugins[type]
+    const typeIndex = mainIndex[type] = {}
+    const typePlugins = plugins[type]
 
-    for (let name in typePlugins) {
-      let typePlugin = typePlugins[name]
+    for (const name in typePlugins) {
+      const typePlugin = typePlugins[name]
 
       typeIndex[name] = true
       registers[type].add(name, typePlugin)
@@ -49,16 +49,16 @@ export const add = (ref, plugins = {}) => {
 /**
  * @access public
  * @method remove
- * @memberof Cite.plugins
- * @param {Cite.plugins~pluginRef} ref - plugin reference/name
+ * @memberof module:@citation-js/core.plugins
+ * @param {module:@citation-js/core.plugins~pluginRef} ref - plugin reference/name
  */
-export const remove = (ref) => {
-  let mainIndex = indices[ref]
+export function remove (ref) {
+  const mainIndex = indices[ref]
 
-  for (let type in mainIndex) {
-    let typeIndex = mainIndex[type]
+  for (const type in mainIndex) {
+    const typeIndex = mainIndex[type]
 
-    for (let name in typeIndex) {
+    for (const name in typeIndex) {
       registers[type].remove(name)
     }
   }
@@ -69,18 +69,34 @@ export const remove = (ref) => {
 /**
  * @access public
  * @method has
- * @memberof Cite.plugins
- * @param {Cite.plugins~pluginRef} ref - plugin reference/name
+ * @memberof module:@citation-js/core.plugins
+ * @param {module:@citation-js/core.plugins~pluginRef} ref - plugin reference/name
  * @returns {Boolean} plugin is registered
  */
-export const has = (ref) => ref in indices
+export function has (ref) {
+  return ref in indices
+}
 
 /**
  * @access public
  * @method list
- * @memberof Cite.plugins
- * @returns {Array<Cite.plugins~pluginRef>} list of registered plugins
+ * @memberof module:@citation-js/core.plugins
+ * @returns {Array<module:@citation-js/core.plugins~pluginRef>} list of registered plugins
  */
-export const list = () => Object.keys(indices)
+export function list () {
+  return Object.keys(indices)
+}
+
+/**
+ * @typedef {String} module:@citation-js/core.plugins~pluginRef
+ */
+
+/**
+ * @typedef {Object} module:@citation-js/core.plugins~plugins
+ * @property {Object<module:@citation-js/core.plugins.input~format,module:@citation-js/core.plugins.input~parsers>} input
+ * @property {Object<module:@citation-js/core.plugins.output~formatterName,module:@citation-js/core.plugins.output~formatter>} output
+ * @property {Object<module:@citation-js/core.plugins.dict~dictName,module:@citation-js/core.plugins.dict~dict>} dict
+ * @property {Object} config
+ */
 
 export { input, output, dict, config }

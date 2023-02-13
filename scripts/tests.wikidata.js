@@ -1,11 +1,10 @@
-/* global fetch */
-require('isomorphic-fetch')
+const fetch = require('node-fetch')
 
-var fs = require('fs')
-var wdk = require('wikidata-sdk')
-var response = require('../packages/plugin-wikidata/lib/response.js')
+const fs = require('fs')
+const wdk = require('wikidata-sdk')
+const response = require('../packages/plugin-wikidata/lib/response.js')
 
-var items = [
+const items = [
   'Q21972834',
   'Q27795847',
   'Q1',
@@ -16,7 +15,11 @@ var items = [
   'Q63862629',
   'Q7017193',
   'Q61642258',
-  'Q51615345'
+  'Q51615345',
+
+  // ImageJ
+  'Q1659584',
+  'Q390551'
 ]
 
 async function getItems (ids) {

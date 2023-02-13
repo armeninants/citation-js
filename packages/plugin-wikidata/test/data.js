@@ -1,11 +1,11 @@
-let opts = {
+const opts = {
   callback: ([data]) => data.replace(/[&?]origin=\*/, ''),
   link: true
 }
 
 module.exports = {
   '@wikidata/id': {
-    'simple': [
+    simple: [
       'Q21972834',
       ['https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q21972834&format=json&languages=en'],
       opts
@@ -14,7 +14,7 @@ module.exports = {
       'Q21972834',
       [
         {
-          _wikiId: 'Q21972834',
+          custom: { QID: 'Q21972834' },
           id: 'Q21972834',
           source: 'Wikidata',
           type: 'article-journal',
@@ -163,7 +163,7 @@ module.exports = {
       'Q27795847',
       [
         {
-          _wikiId: 'Q27795847',
+          custom: { QID: 'Q27795847' },
           id: 'Q27795847',
           source: 'Wikidata',
           type: 'article-journal',
@@ -214,7 +214,7 @@ module.exports = {
               _ordinal: 6
             },
             {
-              given: 'Emma',
+              given: 'Emma L.',
               family: 'Schymanski',
               _ordinal: 7
             },
@@ -229,7 +229,7 @@ module.exports = {
               _ordinal: 9
             },
             {
-              given: 'David S',
+              given: 'David',
               family: 'Wishart',
               _ordinal: 10
             },
@@ -296,11 +296,11 @@ module.exports = {
       'Q1',
       [
         {
-          _wikiId: 'Q1',
+          custom: { QID: 'Q1' },
           id: 'Q1',
           source: 'Wikidata',
-          title: 'Universe',
-          type: 'book'
+          title: 'universe',
+          type: 'document'
         }
       ]
     ],
@@ -308,7 +308,7 @@ module.exports = {
       'Q23571040',
       [
         {
-          _wikiId: 'Q23571040',
+          custom: { QID: 'Q23571040' },
           id: 'Q23571040',
           source: 'Wikidata',
           title: 'Correlation of the Base Strengths of Amines 1',
@@ -334,11 +334,11 @@ module.exports = {
         }
       ]
     ],
-    'chapter': [
+    chapter: [
       'Q7878315',
       [
         {
-          _wikiId: 'Q7878315',
+          custom: { QID: 'Q7878315' },
           id: 'Q7878315',
           source: 'Wikidata',
           type: 'chapter',
@@ -346,25 +346,23 @@ module.exports = {
           language: 'ja',
           'container-title': '源氏物語',
           'container-author': [{
-            _ordinal: -1,
             given: 'Murasaki',
             family: 'Shikibu'
           }]
         }
       ]
     ],
-    'review': [
+    review: [
       'Q50237325',
       [
         {
-          _wikiId: 'Q50237325',
+          custom: { QID: 'Q50237325' },
           id: 'Q50237325',
           type: 'review',
           source: 'Wikidata',
           title: 'Deadly medicines and organised crime: How big pharma has corrupted healthcare.',
           'reviewed-title': 'Deadly Medicines and Organised Crime',
           'reviewed-author': [{
-            _ordinal: -1,
             given: 'Peter C.',
             family: 'Gøtzsche'
           }],
@@ -378,6 +376,7 @@ module.exports = {
           issued: {
             'date-parts': [[2014, 4, 1]]
           },
+          language: 'en',
           'container-title': 'Canadian Family Physician',
           'container-title-short': 'Can. Fam. Physician',
           journalAbbreviation: 'Can. Fam. Physician',
@@ -393,26 +392,26 @@ module.exports = {
       'Q43361',
       [
         {
-          _wikiId: 'Q43361',
+          custom: { QID: 'Q43361' },
           id: 'Q43361',
           type: 'book',
           source: 'Wikidata',
           title: 'Harry Potter and the Philosopher\'s Stone',
           author: [{
-            _ordinal: -1,
             given: 'J. K.',
             family: 'Rowling'
           }],
           issued: {
-            'date-parts': [[1997, 6, 30]]
+            'date-parts': [[1997, 6, 26]]
           },
           'collection-title': 'Harry Potter',
           'collection-number': 1,
+          keyword: 'magician',
           'number-of-volumes': 7,
+          'number-of-pages': 240,
           language: 'en',
           publisher: 'Bloomsbury Publishing',
-          'publisher-place': 'London, UK',
-          ISBN: '978-0-7675-3830-5'
+          'publisher-place': 'London, UK'
         }
       ]
     ],
@@ -420,7 +419,7 @@ module.exports = {
       'Q63862629',
       [
         {
-          _wikiId: 'Q63862629',
+          custom: { QID: 'Q63862629' },
           id: 'Q63862629',
           type: 'paper-conference',
           source: 'Wikidata',
@@ -446,12 +445,14 @@ module.exports = {
             'date-parts': [[2019]]
           },
           keyword: 'Wikipedia',
+          language: 'en',
+          'number-of-pages': 12,
           page: '1567-1578',
           DOI: '10.1145/3308558.3313618',
           'container-title': 'Proceedings of the 2019 World Wide Web Conference on World Wide Web',
           'container-title-short': 'WWW 2019',
           journalAbbreviation: 'WWW 2019',
-          event: 'The Web Conference 2019',
+          'event-title': 'The Web Conference 2019',
           'event-date': {
             'date-parts': [
               [2019, 5, 13],
@@ -466,18 +467,16 @@ module.exports = {
       'Q7017193',
       [
         {
-          _wikiId: 'Q7017193',
+          custom: { QID: 'Q7017193' },
           id: 'Q7017193',
           type: 'personal_communication',
           source: 'Wikidata',
           title: 'Newburgh letter',
           author: [{
-            _ordinal: -1,
             given: 'Lewis',
             family: 'Nicola'
           }],
           recipient: [{
-            _ordinal: -1,
             given: 'George',
             family: 'Washington'
           }]
@@ -488,17 +487,15 @@ module.exports = {
       'Q61642258',
       [
         {
-          _wikiId: 'Q61642258',
+          custom: { QID: 'Q61642258' },
           id: 'Q61642258',
           type: 'map',
           source: 'Wikidata',
           title: 'The Pattern of World Agriculture',
           author: [{
-            _ordinal: -1,
             given: 'Erwin',
             family: 'Raisz'
           }, {
-            _ordinal: -1,
             given: 'Derwent',
             family: 'Whittlesey'
           }],
@@ -506,8 +503,7 @@ module.exports = {
           'publisher-place': 'Cambridge, USA',
           issued: { 'date-parts': [[1941]] },
           medium: 'paper',
-          scale: 60000000,
-          URL: 'http://id.lib.harvard.edu/alma/990037196110203941/catalog'
+          scale: 60000000
         }
       ]
     ],
@@ -515,50 +511,70 @@ module.exports = {
       'Q51615345',
       [
         {
-          _wikiId: 'Q51615345',
+          custom: { QID: 'Q51615345' },
           id: 'Q51615345',
           type: 'book',
           source: 'Wikidata',
           title: 'Gitanjali',
           author: [{
-            _ordinal: -1,
             given: 'Rabindranath',
             family: 'Tagore'
           }],
           translator: [{
-            _ordinal: -1,
             given: 'Rabindranath',
             family: 'Tagore'
           }],
           language: 'en',
           issued: { 'date-parts': [[1913]] },
-          'publisher': 'Macmillan Publishers',
+          publisher: 'Macmillan Publishers',
           'publisher-place': 'London, UK',
-          'original-title': 'গীতাঞ্জলি',
+          // 'original-title': 'গীতাঞ্জলি',
           'original-author': [{
-            _ordinal: -1,
             given: 'Rabindranath',
             family: 'Tagore'
           }],
-          'original-date': { 'date-parts': [[1910]] },
-          'original-publisher': 'Macmillan Publishers',
-          'original-publisher-place': 'London, UK'
+          'original-date': { 'date-parts': [[1912]] }
         }
       ]
+    ],
+    software_developer: [
+      'Q1659584',
+      [{
+        id: 'Q1659584',
+        custom: {
+          FramalibreID: 'imagej',
+          QID: 'Q1659584',
+          RRID: 'RRID:SCR_003070',
+          SW_MATHID: '12531',
+          versions: [
+            {
+              version: '1.53k',
+              issued: { 'date-parts': [[2021, 7, 6]] }
+            }
+          ]
+        },
+        author: [{ family: 'Health', 'non-dropping-particle': 'of', given: 'National Institutes' }],
+        issued: { 'date-parts': [[2021, 7, 6]] },
+        source: 'Wikidata',
+        type: 'software',
+        version: '1.53k',
+        URL: 'https://imagej.nih.gov/ij/',
+        title: 'ImageJ'
+      }]
     ]
   },
   '@wikidata/list+text': {
-    'spaces': [
+    spaces: [
       'Q21972834 Q27795847',
       ['Q21972834', 'Q27795847'],
       opts
     ],
-    'newlines': [
+    newlines: [
       'Q21972834\nQ27795847',
       ['Q21972834', 'Q27795847'],
       opts
     ],
-    'commas': [
+    commas: [
       'Q21972834,Q27795847',
       ['Q21972834', 'Q27795847'],
       opts

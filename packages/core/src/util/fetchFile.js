@@ -1,14 +1,19 @@
-import request from 'sync-request'
-/* global fetch */
-import 'isomorphic-fetch'
+import syncFetch from 'sync-fetch'
+import fetchPolyfill from 'fetch-ponyfill'
 
-import logger from '../logger'
-import { version } from '../../package.json'
+import logger from '../logger.js'
+import pkg from '../../package.json'
 
-let userAgent = `Citation.js/${version} Node.js/${process.version}`
+const { fetch, Headers } = fetchPolyfill()
+
+// Browser environments have CORS enabled
+const corsEnabled = typeof location !== 'undefined' && typeof document !== 'undefined'
+
+// Do not try to set the user agent in browsers
+let userAgent = corsEnabled ? '' : `Citation.js/${pkg.version} Node.js/${process.version}`
 
 /**
- * @typedef Cite.util.fetchFile~options
+ * @typedef module:@citation-js/core.util.fetchFile~options
  * @type {Object}
  * @property {Boolean} checkContentType
  * @property {Object} headers
@@ -22,15 +27,20 @@ let userAgent = `Citation.js/${version} Node.js/${process.version}`
  */
 function normaliseHeaders (headers) {
   const result = {}
-  for (let header in headers) {
-    result[header.toLowerCase()] = [].concat(headers[header])
+
+  const entries = headers instanceof Headers || headers instanceof syncFetch.Headers
+    ? Array.from(headers)
+    : Object.entries(headers)
+  for (const [name, header] of entries) {
+    result[name.toLowerCase()] = header.toString()
   }
+
   return result
 }
 
 /**
  * @access private
- * @param {Cite.util.fetchFile~options} [opts={}] - Request options
+ * @param {module:@citation-js/core.util.fetchFile~options} [opts={}] - Request options
  * @return {Object} new options
  */
 function parseOpts (opts = {}) {
@@ -42,7 +52,7 @@ function parseOpts (opts = {}) {
     checkContentType: opts.checkContentType
   }
 
-  if (userAgent) {
+  if (userAgent && !corsEnabled) {
     reqOpts.headers['user-agent'] = userAgent
   }
 
@@ -55,7 +65,6 @@ function parseOpts (opts = {}) {
 
   if (opts.headers) {
     Object.assign(reqOpts.headers, normaliseHeaders(opts.headers))
-    reqOpts.allowRedirectHeaders = Object.keys(opts.headers)
   }
 
   return reqOpts
@@ -69,15 +78,15 @@ function parseOpts (opts = {}) {
  */
 function sameType (request, response) {
   // istanbul ignore next: should not happen
-  if (!request.accept || !response['content-type']) {
+  if (!request.accept || request.accept === '*/*' || !response['content-type']) {
     return true
   }
 
-  const [a, b] = response['content-type'][0].split(';')[0].split('/')
-  return !!request.accept
-    .reduce((array, header) => array.concat(header.split(/\s*,\s*/)), [])
-    .map(type => type.split(';')[0].split('/'))
-    .find(([c, d]) => (c === a || c === '*') && (d === b || d === '*'))
+  const [a, b] = response['content-type'].split(';')[0].trim().split('/')
+  return request.accept
+    .split(',')
+    .map(type => type.split(';')[0].trim().split('/'))
+    .some(([c, d]) => (c === a || c === '*') && (d === b || d === '*'))
 }
 
 /**
@@ -88,15 +97,13 @@ function sameType (request, response) {
  * @throws If response is invalid
  */
 function checkResponse (response, opts) {
-  const status = response.status || response.statusCode
-  const headers = response.headers._headers || response.headers
+  const { status, headers } = response
   let error
 
   if (status >= 400) {
     error = new Error(`Server responded with status code ${status}`)
-  } else if (opts.checkContentType === true &&
-             !sameType(normaliseHeaders(opts.headers), normaliseHeaders(headers))) {
-    error = new Error(`Server responded with content-type ${headers['content-type']}`)
+  } else if (opts.checkContentType === true && !sameType(opts.headers, normaliseHeaders(headers))) {
+    error = new Error(`Server responded with content-type ${headers.get('content-type')}`)
   }
 
   if (error) {
@@ -113,10 +120,11 @@ function checkResponse (response, opts) {
  * Fetch file
  *
  * @access protected
- * @memberof Cite.util
+ * @method fetchFile
+ * @memberof module:@citation-js/core.util
  *
  * @param {String} url - The input url
- * @param {Cite.util.fetchFile~options} [opts] - Request options
+ * @param {module:@citation-js/core.util.fetchFile~options} [opts] - Request options
  *
  * @return {String} The fetched string
  */
@@ -125,18 +133,19 @@ export function fetchFile (url, opts) {
 
   logger.http('[core]', reqOpts.method, url, reqOpts)
 
-  const response = checkResponse(request(reqOpts.method, url, reqOpts), reqOpts)
-  return response.body.toString('utf8')
+  const response = checkResponse(syncFetch(url, reqOpts), reqOpts)
+  return response.text()
 }
 
 /**
  * Fetch file (async)
  *
  * @access protected
- * @memberof Cite.util
+ * @method fetchFileAsync
+ * @memberof module:@citation-js/core.util
  *
  * @param {String} url - The input url
- * @param {Cite.util.fetchFile~options} [opts] - Request options
+ * @param {module:@citation-js/core.util.fetchFile~options} [opts] - Request options
  *
  * @return {Promise<String>} The fetched string
  */
@@ -154,10 +163,11 @@ export async function fetchFileAsync (url, opts) {
  * Fetch file (async)
  *
  * @access protected
- * @memberof Cite.util
+ * @method setUserAgent
+ * @memberof module:@citation-js/core.util
  *
  * @param {String} url - The input url
- * @param {Cite.util.fetchFile~options} [opts] - Request options
+ * @param {module:@citation-js/core.util.fetchFile~options} [opts] - Request options
  */
 export function setUserAgent (newUserAgent) {
   userAgent = newUserAgent

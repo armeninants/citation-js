@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-const { Cite } = require('../src/')
+const { Cite } = require('../src/index.js')
 const input = require('./data.json')
 const expect = require('expect.js')
 
@@ -42,7 +42,10 @@ describe('Cite instance', () => {
 
   describe('function', () => {
     let test
-    beforeEach(() => { test = new Cite(input.empty) })
+    beforeEach(function () {
+      test = new Cite(input.empty)
+      test.save()
+    })
 
     describe('add()', () => {
       it('works', () => {

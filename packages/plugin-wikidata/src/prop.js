@@ -1,55 +1,51 @@
-/**
- * @module input/wikidata
- */
-
 import { logger } from '@citation-js/core'
 import { parse as parseNameString } from '@citation-js/name'
 import { parse as parseDate } from '@citation-js/date'
 
-import config from './config'
+import config from './config.json'
 
 /**
  * CSL mappings for Wikidata instances.
- * @constant types
- */
-import types from './types'
-
-/**
- * Get series ordinal from qualifiers object
- *
  * @access private
- * @param {Object} qualifiers - qualifiers
- * @return {Number} series ordinal or -1
+ * @constant types
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
  */
-const getSeriesOrdinal = ({ P1545 }) => P1545 ? parseInt(P1545[0]) : -1
+import types from './types.json'
 
 /**
  * Some name fields have, in addition to a Wikidata ID, a qualifier stating
  * how the name is actually represented. That's what we want to cite.
  *
  * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
  * @param {Object} qualifiers
  * @return {Array<String>} names
  */
-const getStatedAs = qualifiers => [].concat(...[
-  qualifiers.P1932,
-  qualifiers.P1810
-].filter(Boolean))
+function getStatedAs (qualifiers) {
+  return [].concat(...[
+    qualifiers.P1932,
+    qualifiers.P1810
+  ].filter(Boolean))
+}
 
 /**
  * Get a single name
  *
  * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
  * @param {Object} claim - name claim
  * @return {Object} Name object
  */
-const parseName = ({ value, qualifiers }) => {
+function parseName ({ value, qualifiers }) {
   let [name] = getStatedAs(qualifiers)
   if (!name) {
     name = typeof value === 'string' ? value : getLabel(value)
   }
   name = name ? parseNameString(name) : { literal: name }
-  name._ordinal = getSeriesOrdinal(qualifiers)
+  const ordinal = qualifiers.P1545 ? parseInt(qualifiers.P1545[0]) : null
+  if (ordinal !== null) {
+    name._ordinal = ordinal
+  }
   return name
 }
 
@@ -57,41 +53,147 @@ const parseName = ({ value, qualifiers }) => {
  * Get names
  *
  * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
  * @param {Array<Object>} values
- *
  * @return {Array<Object>} Array with name objects
  */
-const parseNames = (values) => {
+function parseNames (values) {
   return values
     .map(parseName)
     .sort((a, b) => a._ordinal - b._ordinal)
 }
 
-const getPlace = value => {
+/**
+ * Get place name from (publisher) entity.
+ *
+ * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
+ * @param {Object} value
+ * @return {String} Place name + country
+ */
+function getPlace (value) {
   const country = value.claims.P17[0].value
   // only short names that are not an instance of (P31) emoji flag seqs. (Q28840786)
   const shortNames = country.claims.P1813.filter(({ qualifiers: { P31 } }) => !P31 || P31[0] !== 'Q28840786')
   return getLabel(value) + ', ' + (shortNames[0] || country.claims.P1448[0]).value
 }
 
-const getTitle = value => {
+/**
+ * Get title either from explicit statement or from label.
+ *
+ * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
+ * @param {Object} value
+ * @return {String} Title
+ */
+function getTitle (value) {
   return value.claims.P1476
     ? value.claims.P1476[0].value
     : getLabel(value)
 }
 
-const parseKeywords = values => {
+/**
+ * Turn array of entities into comma-separated list of labels.
+ *
+ * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
+ * @param {Array<Object>} values
+ * @return {String} Labels
+ */
+function parseKeywords (values) {
   return values
     .map(({ value }) => getLabel(value))
     .join(',')
 }
 
-const parseDateRange = dates => ({
-  'date-parts': dates
-    .map(date => parseDate(date.value))
-    .filter(date => date && date['date-parts'])
-    .map(date => date['date-parts'][0])
-})
+/**
+ * Get date parts from multiple statements.
+ *
+ * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
+ * @param {Array<Object>} values
+ * @return {Array<Array<Number>>} Array of date-parts
+ */
+function parseDateRange (dates) {
+  return {
+    'date-parts': dates
+      .map(date => parseDate(date.value))
+      .filter(date => date && date['date-parts'])
+      .map(date => date['date-parts'][0])
+  }
+}
+
+/**
+ * Get version information.
+ *
+ * @access private
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
+ * @param {Array<Object>} values
+ * @return {Array<Array<Number>>} Array of date-parts
+ */
+function parseVersion (version) {
+  const output = { version: version.value }
+  if (version.qualifiers.P577) {
+    output.issued = parseDate(version.qualifiers.P577[0])
+  }
+  if (version.qualifiers.P356) {
+    output.DOI = version.qualifiers.P356[0]
+  }
+  if (version.qualifiers.P6138) {
+    output.SWHID = version.qualifiers.P6138[0]
+  }
+  return output
+}
+
+export const TYPE_PRIORITIES = {
+  'review-book': 10,
+  review: 9,
+  'entry-dictionary': 5,
+  'entry-encyclopedia': 5,
+  map: 5,
+  dataset: 4,
+  legislation: 1,
+
+  'article-magazine': 0,
+  bill: 0,
+  chapter: 0,
+  classic: 0,
+  collection: 0,
+  entry: 0,
+  figure: 0,
+  graphic: 0,
+  hearing: 0,
+  interview: 0,
+  legal_case: 0,
+  manuscript: 0,
+  motion_picture: 0,
+  musical_score: 0,
+  pamphlet: 0,
+  'paper-conference': 0,
+  patent: 0,
+  personal_communication: 0,
+  'post-weblog': 0,
+  report: 0,
+  song: 0,
+  speech: 0,
+  standard: 0,
+  thesis: 0,
+  treaty: 0,
+
+  broadcast: -1,
+  'article-newspaper': -1,
+  'article-journal': -1,
+  periodical: -2,
+  regulation: -2,
+  post: -5,
+  webpage: -6,
+  software: -7,
+  article: -9,
+  book: -10,
+  performance: -11,
+  event: -12,
+  document: -100
+}
 
 /**
  * Transform property and value from Wikidata format to CSL.
@@ -99,6 +201,8 @@ const parseDateRange = dates => ({
  * Returns additional _ordinal property on authors.
  *
  * @access protected
+ * @method parse
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
  *
  * @param {String} prop
  * @param {Array|String} values
@@ -112,15 +216,25 @@ export function parseProp (prop, value, entity) {
       return parseType(value)
 
     case 'author':
-    case 'director':
+    case 'chair':
+    case 'curator':
     case 'container-author':
     case 'collection-editor':
     case 'composer':
+    case 'director':
     case 'editor':
+    case 'executive-producer':
+    case 'guest':
+    case 'host':
     case 'illustrator':
+    case 'narrator':
+    case 'organizer':
     case 'original-author':
+    case 'performer':
+    case 'producer':
     case 'recipient':
     case 'reviewed-author':
+    case 'script-writer':
     case 'translator':
       return parseNames(value)
 
@@ -136,22 +250,27 @@ export function parseProp (prop, value, entity) {
 
     case 'container-title':
     case 'collection-title':
-    case 'event':
+    case 'event-title':
     case 'medium':
     case 'publisher':
     case 'original-publisher':
       return getTitle(value)
 
     case 'event-place':
+    case 'jurisdiction':
     case 'original-publisher-place':
     case 'publisher-place':
       return getPlace(value)
 
+    case 'chapter-number':
     case 'collection-number':
-      return getSeriesOrdinal(value[0].qualifiers)
+      return parseInt(value[0])
 
     case 'number-of-volumes':
       return value.length
+
+    case 'versions':
+      return value.map(parseVersion)
 
     default:
       return value
@@ -160,23 +279,30 @@ export function parseProp (prop, value, entity) {
 
 /**
  * @access protected
- * @param {String} type - P31 Wikidata ID value
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
+ * @param {String|Array<String>} type - P31 Wikidata ID value
  * @return {String} CSL type
  */
 export function parseType (type) {
-  if (!types[type]) {
+  const unmapped = Array.isArray(type) ? type : [type]
+  const mapped = unmapped.map(type => types[type.value]).filter(Boolean)
+
+  if (!mapped.length) {
     logger.unmapped('[plugin-wikidata]', 'publication type', type)
-    return 'book'
+    return 'document'
   }
 
-  return types[type]
+  mapped.sort((a, b) => TYPE_PRIORITIES[b] - TYPE_PRIORITIES[a])
+
+  return mapped[0]
 }
 
 /**
  * Get the labels of objects
  *
+ * @access protected
+ * @memberof module:@citation-js/plugin-wikidata.parsers.prop
  * @param {Object} entity - Wikidata API response
- *
  * @return {String} label
  */
 export function getLabel (entity) {

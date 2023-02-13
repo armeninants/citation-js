@@ -1,13 +1,9 @@
-/**
- * @module output/ris
- */
-
 import { util } from '@citation-js/core'
-import config from './config'
+import config from './config.json'
 
-import { SPECS } from './spec'
-import CONVERTERS from './converters'
-import DATA_TYPES from './dataTypes'
+import { SPECS } from './spec/index.js'
+import CONVERTERS from './converters.js'
+import DATA_TYPES from './dataTypes.json'
 
 const LINE_MATCH = /^[A-Z][A-Z0-9] {2}-( |$)/
 const LINE_SPLIT = / {2}-(?: |$)/
@@ -15,7 +11,7 @@ const TRANSLATORS = new Map()
 
 function prepareTranslator (spec) {
   if (!TRANSLATORS.has(spec)) {
-    for (let mapping of spec) {
+    for (const mapping of spec) {
       if (mapping.target in DATA_TYPES) {
         mapping.convert = CONVERTERS[DATA_TYPES[mapping.target]]
       }
@@ -43,13 +39,25 @@ function prepareTranslator (spec) {
   return TRANSLATORS.get(spec)
 }
 
+/**
+ * @access private
+ * @method parse
+ * @memberof module:@citation-js/plugin-ris.formats
+ *
+ * @param {String} text - RIS file
+ * @return {Array<module:@citation-js/core~CSL>}
+ */
 export function parse (text) {
   const entries = []
   let lastEntry
   let lastTag
 
-  for (let line of text.split('\n')) {
-    if (!LINE_MATCH.test(line)) { lastEntry[lastTag] += line }
+  for (let line of text.split(/\r?\n/)) {
+    line = line.trim()
+    if (!LINE_MATCH.test(line)) {
+      if (lastEntry && lastTag) { lastEntry[lastTag] += ' ' + line }
+      continue
+    }
 
     const [tag, value] = line.split(LINE_SPLIT)
     switch (tag) {
@@ -74,12 +82,51 @@ export function parse (text) {
   return entries
 }
 
+/**
+ * @access private
+ * @method parseOld
+ * @memberof module:@citation-js/plugin-ris.formats
+ *
+ * @param {Object} data - RIS record
+ * @return {module:@citation-js/core~CSL}
+ */
 export function parseOld (data) { return prepareTranslator(SPECS.old).convertToTarget(data) }
+
+/**
+ * @access private
+ * @method parseNew
+ * @memberof module:@citation-js/plugin-ris.formats
+ *
+ * @param {Object} data - RIS record
+ * @return {module:@citation-js/core~CSL}
+ */
 export function parseNew (data) { return prepareTranslator(SPECS.new).convertToTarget(data) }
+
+/**
+ * @access private
+ * @method parseMixed
+ * @memberof module:@citation-js/plugin-ris.formats
+ *
+ * @param {Object} data - RIS record
+ * @return {module:@citation-js/core~CSL}
+ */
 export function parseMixed (data) { return prepareTranslator(SPECS.mixed).convertToTarget(data) }
 
-export function format (data, { type, format = type || 'text' } = {}) {
-  const entries = data.map(prepareTranslator(SPECS[config.outputSpec]).convertToSource)
+/**
+ * @access private
+ * @method format
+ * @memberof module:@citation-js/plugin-ris.output
+ * @implements module:@citation-js/core.plugins.output~formatter
+ *
+ * @param {Array<module:@citation-js/core~CSL>} data
+ * @param {Object} [opts]
+ * @param {String} [opts.spec='mixed'] - RIS specification (`mixed`, `new` or `old`)
+ * @param {module:@citation-js/core.plugins.dict~dictName|String} [opts.format='text'] - Output dict name or `'object'` for a representation
+ * @return {String|Array<Object>}
+ */
+export function format (data, { type, format = type || 'text', spec } = {}) {
+  const outputSpec = spec || config.outputSpec
+  const entries = data.map(prepareTranslator(SPECS[outputSpec]).convertToSource)
 
   if (format === 'object') {
     return entries
@@ -88,7 +135,7 @@ export function format (data, { type, format = type || 'text' } = {}) {
   return entries.map(entry => {
     const tags = []
 
-    for (let tag in entry) {
+    for (const tag in entry) {
       if (tag === 'TY') { continue }
       tags.push(...[].concat(entry[tag]).map(value => `${tag}  - ${value.toString().replace(/(.{70})/g, '$1\n')}`))
     }

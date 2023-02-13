@@ -1,28 +1,59 @@
-/**
- * @module output/bibtex
- */
-
 import { plugins } from '@citation-js/core'
-import json from './json'
-import { getBibtex } from './text'
-import { getBibtxt } from './bibtxt'
+import { format as mapBiblatex, formatBibtex as mapBibtex } from './entries.js'
+import { format } from './bibtex.js'
+import { format as formatBibtxt } from './bibtxt.js'
 
-const factory = function (formatter) {
+const factory = function (mapper, formatter) {
   return function (data, opts = {}) {
     const { type, format = type || 'text' } = opts
+    data = mapper(data)
 
     if (format === 'object') {
-      return data.map(json)
+      return data
     } else if (plugins.dict.has(format)) {
       return formatter(data, plugins.dict.get(format), opts)
     } else {
-      // throw new RangeError(`Output dictionary "${format}" not available`)
-      return ''
+      throw new RangeError(`Output dictionary "${format}" not available`)
     }
   }
 }
 
+/**
+ * @namespace output
+ * @type Object<module:@citation-js/core.plugins.output~formatterName,module:@citation-js/core.plugins.output~formatter>
+ * @memberof module:@citation-js/plugin-bibtex
+ */
 export default {
-  bibtex: factory(getBibtex),
-  bibtxt: factory(getBibtxt)
+  /**
+   * @function
+   * @implements module:@citation-js/core.plugins.output~formatter
+   * @memberof module:@citation-js/plugin-bibtex.output
+   * @param {Array<module:@citation-js/core~CSL>} data
+   * @param {Object} [opts]
+   * @param {module:@citation-js/core.plugins.dict~dictName|String} [opts.format='text'] - Output dict name or `'object'` for a representation
+   * @return {String|Array<Object>}
+   */
+  bibtex: factory(mapBibtex, format),
+
+  /**
+   * @function
+   * @implements module:@citation-js/core.plugins.output~formatter
+   * @memberof module:@citation-js/plugin-bibtex.output
+   * @param {Array<module:@citation-js/core~CSL>} data
+   * @param {Object} [opts]
+   * @param {module:@citation-js/core.plugins.dict~dictName|String} [opts.format='text'] - Output dict name or `'object'` for a representation
+   * @return {String|Array<Object>}
+   */
+  biblatex: factory(mapBiblatex, format),
+
+  /**
+   * @function
+   * @implements module:@citation-js/core.plugins.output~formatter
+   * @memberof module:@citation-js/plugin-bibtex.output
+   * @param {Array<module:@citation-js/core~CSL>} data
+   * @param {Object} [opts]
+   * @param {module:@citation-js/core.plugins.dict~dictName|String} [opts.format='text'] - Output dict name or `'object'` for a representation
+   * @return {String|Array<Object>}
+   */
+  bibtxt: factory(mapBibtex, formatBibtxt)
 }

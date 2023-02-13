@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 
-const { plugins } = require('../src/')
+const { plugins } = require('../src/index.js')
 const expect = require('expect.js')
 
 const ref = '@test'
@@ -216,10 +216,10 @@ describe('plugins', function () {
       })
 
       describe('class', function () {
-        var { TypeParser } = plugins.input.util
+        const { TypeParser } = plugins.input.util
 
         it('can be combined', function () {
-          var { predicate } = new TypeParser({
+          const { predicate } = new TypeParser({
             predicate: object => Object.keys(object).length === 2,
             propertyConstraint: { props: 'foo' }
           })
@@ -229,7 +229,7 @@ describe('plugins', function () {
           expect(predicate({})).not.to.be.ok()
         })
         it('validates', function () {
-          var instance
+          let instance
           instance = new TypeParser({})
           expect(instance.validate.bind(instance)).not.to.throwException()
           instance = new TypeParser(1)
@@ -241,7 +241,7 @@ describe('plugins', function () {
 
         describe('dataType', function () {
           it('outputs properly', function () {
-            var instance = new TypeParser({ dataType: 'SimpleObject' })
+            const instance = new TypeParser({ dataType: 'SimpleObject' })
             expect(instance.dataType).to.be('SimpleObject')
           })
           it('can be inferred', function () {
@@ -252,18 +252,18 @@ describe('plugins', function () {
             expect((new TypeParser({ dataType: 'Array', predicate: /foo/ })).dataType).to.be('Array')
           })
           it('validates', function () {
-            var instance = new TypeParser({ dataType: 'String' })
+            const instance = new TypeParser({ dataType: 'String' })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('invalidates non-datatypes', function () {
-            var instance = new TypeParser({ dataType: 'Blue' })
+            const instance = new TypeParser({ dataType: 'Blue' })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(RangeError)
               expect(e).to.match(/dataType was Blue; expected one of/)
             })
           })
           it('invalidates non-strings', function () {
-            var instance = new TypeParser({ dataType: 12 })
+            const instance = new TypeParser({ dataType: 12 })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(RangeError)
               expect(e).to.match(/dataType was 12; expected one of/)
@@ -286,25 +286,25 @@ describe('plugins', function () {
         })
         describe('predicate', function () {
           it('outputs properly for functions', function () {
-            var { predicate } = new TypeParser({ predicate: a => a === 'foo' })
+            const { predicate } = new TypeParser({ predicate: a => a === 'foo' })
             expect(predicate('foo')).to.be.ok()
             expect(predicate('bar')).not.to.be.ok()
           })
           it('outputs properly for regex', function () {
-            var { predicate } = new TypeParser({ predicate: /^foo$/ })
+            const { predicate } = new TypeParser({ predicate: /^foo$/ })
             expect(predicate('foo')).to.be.ok()
             expect(predicate('bar')).not.to.be.ok()
           })
           it('validates functions', function () {
-            var instance = new TypeParser({ predicate: function () {} })
+            const instance = new TypeParser({ predicate: function () {} })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('validates regex', function () {
-            var instance = new TypeParser({ predicate: /a/ })
+            const instance = new TypeParser({ predicate: /a/ })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('invalidates non-predicates', function () {
-            var instance = new TypeParser({ predicate: 'Blue' })
+            const instance = new TypeParser({ predicate: 'Blue' })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(TypeError)
               expect(e).to.match(/predicate was string; expected RegExp or function/)
@@ -313,51 +313,57 @@ describe('plugins', function () {
         })
         describe('tokenList', function () {
           it('outputs properly for objects', function () {
-            var { predicate } = new TypeParser({ tokenList: { token: /a/ } })
+            const { predicate } = new TypeParser({ tokenList: { token: /a/ } })
             expect(predicate('a a a')).to.be.ok()
             expect(predicate(' a a a ')).to.be.ok()
             expect(predicate('a b a')).not.to.be.ok()
           })
           it('outputs properly for regex', function () {
-            var { predicate } = new TypeParser({ tokenList: /a/ })
+            const { predicate } = new TypeParser({ tokenList: /a/ })
             expect(predicate('a a a')).to.be.ok()
             expect(predicate('a b a')).not.to.be.ok()
           })
           it('outputs properly for object with split', function () {
-            var { predicate } = new TypeParser({ tokenList: {
-              token: /^a$/,
-              split: /b/
-            } })
+            const { predicate } = new TypeParser({
+              tokenList: {
+                token: /^a$/,
+                split: /b/
+              }
+            })
             expect(predicate('ababa')).to.be.ok()
             expect(predicate('a a a')).not.to.be.ok()
             expect(predicate('abcba')).not.to.be.ok()
           })
           it('outputs properly for object without trim', function () {
-            var { predicate } = new TypeParser({ tokenList: {
-              token: /^a$/,
-              trim: false
-            } })
+            const { predicate } = new TypeParser({
+              tokenList: {
+                token: /^a$/,
+                trim: false
+              }
+            })
             expect(predicate('a a a')).to.be.ok()
             expect(predicate(' a a a ')).not.to.be.ok()
           })
           it('outputs properly for object without every', function () {
-            var { predicate } = new TypeParser({ tokenList: {
-              token: /^a$/,
-              every: false
-            } })
+            const { predicate } = new TypeParser({
+              tokenList: {
+                token: /^a$/,
+                every: false
+              }
+            })
             expect(predicate('a b a b a')).to.be.ok()
             expect(predicate('b b')).not.to.be.ok()
           })
           it('validates objects', function () {
-            var instance = new TypeParser({ tokenList: {} })
+            const instance = new TypeParser({ tokenList: {} })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('validates regex', function () {
-            var instance = new TypeParser({ tokenList: /a/ })
+            const instance = new TypeParser({ tokenList: /a/ })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('invalidates non-tokenlists', function () {
-            var instance = new TypeParser({ tokenList: 'Blue' })
+            const instance = new TypeParser({ tokenList: 'Blue' })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(TypeError)
               expect(e).to.match(/tokenList was string; expected object or RegExp/)
@@ -366,29 +372,35 @@ describe('plugins', function () {
         })
         describe('propertyConstraint', function () {
           it('outputs properly for one prop', function () {
-            var { predicate } = new TypeParser({ propertyConstraint: {
-              props: 'foo'
-            } })
+            const { predicate } = new TypeParser({
+              propertyConstraint: {
+                props: 'foo'
+              }
+            })
             expect(predicate({ foo: 1, bar: 2 })).to.be.ok()
             expect(predicate({ foo: 1 })).to.be.ok()
             expect(predicate({})).not.to.be.ok()
             expect(predicate({ bar: 2 })).not.to.be.ok()
           })
           it('outputs properly for prop predicates', function () {
-            var { predicate } = new TypeParser({ propertyConstraint: {
-              props: ['foo'],
-              value: value => value === 1
-            } })
+            const { predicate } = new TypeParser({
+              propertyConstraint: {
+                props: ['foo'],
+                value: value => value === 1
+              }
+            })
             expect(predicate({ foo: 1 })).to.be.ok()
             expect(predicate({ foo: 2 })).not.to.be.ok()
             expect(predicate({})).not.to.be.ok()
             expect(predicate({ bar: 1 })).not.to.be.ok()
           })
           it('outputs properly for match=every', function () {
-            var { predicate } = new TypeParser({ propertyConstraint: {
-              props: ['foo', 'bar'],
-              match: 'every'
-            } })
+            const { predicate } = new TypeParser({
+              propertyConstraint: {
+                props: ['foo', 'bar'],
+                match: 'every'
+              }
+            })
             expect(predicate({ foo: 1, bar: 2 })).to.be.ok()
             expect(predicate({ foo: 1, bar: 2, baz: 3 })).to.be.ok()
             expect(predicate({ foo: 1 })).not.to.be.ok()
@@ -397,10 +409,12 @@ describe('plugins', function () {
             expect(predicate({ baz: 3 })).not.to.be.ok()
           })
           it('outputs properly for match=some', function () {
-            var { predicate } = new TypeParser({ propertyConstraint: {
-              props: ['foo', 'bar'],
-              match: 'some'
-            } })
+            const { predicate } = new TypeParser({
+              propertyConstraint: {
+                props: ['foo', 'bar'],
+                match: 'some'
+              }
+            })
             expect(predicate({ foo: 1, bar: 2 })).to.be.ok()
             expect(predicate({ foo: 1, bar: 2, baz: 3 })).to.be.ok()
             expect(predicate({ foo: 1 })).to.be.ok()
@@ -409,10 +423,12 @@ describe('plugins', function () {
             expect(predicate({ baz: 3 })).not.to.be.ok()
           })
           it('outputs properly for match=none', function () {
-            var { predicate } = new TypeParser({ propertyConstraint: {
-              props: ['foo', 'bar'],
-              match: 'none'
-            } })
+            const { predicate } = new TypeParser({
+              propertyConstraint: {
+                props: ['foo', 'bar'],
+                match: 'none'
+              }
+            })
             expect(predicate({})).to.be.ok()
             expect(predicate({ baz: 3 })).to.be.ok()
             expect(predicate({ foo: 1, bar: 2 })).not.to.be.ok()
@@ -421,15 +437,15 @@ describe('plugins', function () {
             expect(predicate({ foo: 1, baz: 3 })).not.to.be.ok()
           })
           it('validates objects', function () {
-            var instance = new TypeParser({ propertyConstraint: {} })
+            const instance = new TypeParser({ propertyConstraint: {} })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('validates arrays', function () {
-            var instance = new TypeParser({ propertyConstraint: [] })
+            const instance = new TypeParser({ propertyConstraint: [] })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('invalidates non-objects', function () {
-            var instance = new TypeParser({ propertyConstraint: 'Blue' })
+            const instance = new TypeParser({ propertyConstraint: 'Blue' })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(TypeError)
               expect(e).to.match(/propertyConstraint was string; expected array or object/)
@@ -439,7 +455,7 @@ describe('plugins', function () {
         describe('elementConstraint', function () {
           it('outputs properly', function () {
             plugins.input.add('@foo/bar', { parseType: { predicate: /foo/ } })
-            var { predicate } = new TypeParser({ elementConstraint: '@foo/bar' })
+            const { predicate } = new TypeParser({ elementConstraint: '@foo/bar' })
             expect(predicate([])).to.be.ok()
             expect(predicate(['foo'])).to.be.ok()
             expect(predicate(['foo', 'foo'])).to.be.ok()
@@ -449,11 +465,11 @@ describe('plugins', function () {
             expect(predicate(['bar', 'bar'])).not.to.be.ok()
           })
           it('validates', function () {
-            var instance = new TypeParser({ elementConstraint: '@foo/bar' })
+            const instance = new TypeParser({ elementConstraint: '@foo/bar' })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('invalidates non-strings', function () {
-            var instance = new TypeParser({ elementConstraint: 12 })
+            const instance = new TypeParser({ elementConstraint: 12 })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(TypeError)
               expect(e).to.match(/elementConstraint was number; expected string/)
@@ -462,15 +478,15 @@ describe('plugins', function () {
         })
         describe('extends', function () {
           it('outputs properly', function () {
-            var { extends: extend } = new TypeParser({ extends: '@foo/bar' })
+            const { extends: extend } = new TypeParser({ extends: '@foo/bar' })
             expect(extend).to.be('@foo/bar')
           })
           it('validates', function () {
-            var instance = new TypeParser({ extends: '@foo/bar' })
+            const instance = new TypeParser({ extends: '@foo/bar' })
             expect(instance.validate.bind(instance)).to.not.throwException()
           })
           it('invalidates non-strings', function () {
-            var instance = new TypeParser({ extends: 2 })
+            const instance = new TypeParser({ extends: 2 })
             expect(instance.validate.bind(instance)).to.throwException(e => {
               expect(e).to.be.a(TypeError)
               expect(e).to.match(/extends was number; expected string/)
@@ -522,21 +538,21 @@ describe('plugins', function () {
       })
 
       describe('class', function () {
-        var { DataParser } = plugins.input.util
+        const { DataParser } = plugins.input.util
         it('works', function () {
-          var instance = new DataParser(() => {})
-          var async = new DataParser(() => {}, { async: true })
+          const instance = new DataParser(() => {})
+          const async = new DataParser(() => {}, { async: true })
           expect(typeof instance.parser).to.be('function')
           expect(typeof async.parser).to.be('function')
           expect(instance.async).not.to.be.ok()
           expect(async.async).to.be.ok()
         })
         it('validates', function () {
-          var instance = new DataParser(() => {})
+          const instance = new DataParser(() => {})
           expect(instance.validate.bind(instance)).not.to.throwException()
         })
         it('invalidates non-functions', function () {
-          var instance = new DataParser(12)
+          const instance = new DataParser(12)
           expect(instance.validate.bind(instance)).to.throwException(e => {
             expect(e).to.be.a(TypeError)
             expect(e).to.match(/parser was number; expected function/)
@@ -546,9 +562,9 @@ describe('plugins', function () {
     })
 
     describe('class', function () {
-      var { FormatParser } = plugins.input.util
+      const { FormatParser } = plugins.input.util
       it('validates format', function () {
-        var instance
+        let instance
         instance = new FormatParser('@foo/bar')
         expect(instance.validate.bind(instance)).not.to.throwException()
         instance = new FormatParser('@foo')
@@ -563,7 +579,7 @@ describe('plugins', function () {
         expect(instance.validate.bind(instance)).to.throwException()
       })
       it('validates parsers', function () {
-        var instance
+        let instance
         instance = new FormatParser('@foo/bar', { parseType: { dataType: 'String' } })
         expect(instance.validate.bind(instance)).not.to.throwException()
         instance = new FormatParser('@foo/bar', { parseType: { dataType: 12 } })

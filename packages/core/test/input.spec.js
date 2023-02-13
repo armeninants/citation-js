@@ -1,13 +1,27 @@
 /* eslint-env mocha */
 
-const { plugins } = require('../src/')
+const { plugins } = require('../src/index.js')
 const expect = require('expect.js')
 
 const cases = {
   '@csl/object': {
     'with no properties': [{}, [{}]],
     'with nonsense properties': [{ a: 1 }, [{ a: 1 }]],
-    'with proper properties': [{ title: 'test' }, [{ title: 'test' }]]
+    'with proper properties': [{ title: 'test' }, [{ title: 'test' }]],
+    'with old CSL': [
+      {
+        type: 'book',
+        version: '1.0.2',
+        title: 'Citation Style Language',
+        event: 'RFC'
+      },
+      [{
+        type: 'software',
+        version: '1.0.2',
+        title: 'Citation Style Language',
+        'event-title': 'RFC'
+      }]
+    ]
   },
   '@csl/list+object': {
     'without elements': [[], [], { link: true }],
@@ -194,7 +208,18 @@ describe('input', function () {
         expect(util.clean([{ foo: 1 }], false)).to.eql([{}])
       })
       it('keeps custom fields', function () {
-        expect(util.clean([{ _foo: 1 }], false)).to.eql([{ _foo: 1 }])
+        expect(util.clean([{ custom: { foo: 1 } }], false)).to.eql([{ custom: { foo: 1 } }])
+      })
+      it('keeps valid types', function () {
+        const input = [{ type: 'personal_communication' }]
+        expect(util.clean(input, false)).to.eql(input)
+      })
+      it('removes invalid types', function () {
+        let input
+        input = [{ type: 'foo' }]
+        expect(util.clean(input, false)).to.eql([{}])
+        input = [{ type: 'proceedings-article' }]
+        expect(util.clean(input, false)).to.eql([{}])
       })
       it('keeps valid names', function () {
         let input
@@ -213,7 +238,7 @@ describe('input', function () {
         let input
         input = [{ issued: { 'date-parts': [[1, 2, 3]] } }]
         expect(util.clean(input, false)).to.eql(input)
-        input = [{ issued: { 'raw': 'foo' } }]
+        input = [{ issued: { raw: 'foo' } }]
         expect(util.clean(input, false)).to.eql(input)
       })
       it('keeps dates in legacy format', function () {
@@ -248,6 +273,10 @@ describe('input', function () {
           expect(util.clean([{ issued: { 'date-parts': [[{}, '08', '30']] } }], true)).to.eql([{}])
           expect(util.clean([{ issued: [{ 'date-parts': [{}, '08', '30'] }] }], true)).to.eql([{}])
         })
+        it('but it does not convert ids from strings to numbers or reverse', function () {
+          expect(util.clean([{ id: '123' }], true)[0].id).to.be.a('string')
+          expect(util.clean([{ id: 123 }], true)[0].id).to.be.a('number')
+        })
         it('on number values that should (only) be strings', function () {
           expect(util.clean([{ scale: 1e6 }], true)).to.eql([{ scale: '1000000' }])
           expect(util.clean([{ number: 40 }], true)).to.eql([{ number: 40 }])
@@ -255,6 +284,20 @@ describe('input', function () {
         it('on arrays that should be single values', function () {
           expect(util.clean([{ ISBN: ['12345667890'] }], true)).to.eql([{ ISBN: '12345667890' }])
           expect(util.clean([{ ISSN: ['1234-5678', '9101-1121'] }], true)).to.eql([{ ISSN: '1234-5678' }])
+        })
+        it('on array with types', function () {
+          expect(util.clean([{
+            type: ['article-newspaper', 'review-book']
+          }])).to.eql([{
+            type: 'article-newspaper'
+          }])
+        })
+        it('on mapped invalid types', function () {
+          expect(util.clean([{
+            type: 'proceedings-article'
+          }])).to.eql([{
+            type: 'paper-conference'
+          }])
         })
         it('on unparsed names', function () {
           expect(util.clean([{
@@ -269,10 +312,10 @@ describe('input', function () {
   })
 
   describe('internal types', function () {
-    for (let type in cases) {
+    for (const type in cases) {
       describe(type, function () {
-        for (let name of Object.keys(cases[type])) {
-          let [input, expected] = cases[type][name]
+        for (const name of Object.keys(cases[type])) {
+          const [input, expected] = cases[type][name]
           describe(name, function () {
             it('parses type', function () {
               expect(plugins.input.type(input)).to.be(type)

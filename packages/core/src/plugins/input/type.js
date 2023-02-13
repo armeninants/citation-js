@@ -1,5 +1,5 @@
-import logger from '../../logger'
-import { dataTypeOf } from './dataType'
+import logger from '../../logger.js'
+import { dataTypeOf } from './dataType.js'
 
 // register
 const types = {}
@@ -12,13 +12,13 @@ const unregExts = {}
  * Hard-coded, for reasons
  *
  * @access private
- * @memberof Cite.plugins.input
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {InputData} input
- * @param {Cite.plugins.input~dataType} dataType
- * @return {Cite.plugins.input~format} native format
+ * @param {module:@citation-js/core~InputData} input
+ * @param {module:@citation-js/core.plugins.input~dataType} dataType
+ * @return {module:@citation-js/core.plugins.input~format} native format
  */
-const parseNativeTypes = (input, dataType) => {
+function parseNativeTypes (input, dataType) {
   switch (dataType) {
     case 'Array':
       if (input.length === 0 || input.every(entry => type(entry) === '@csl/object')) {
@@ -39,14 +39,14 @@ const parseNativeTypes = (input, dataType) => {
 
 /**
  * @access private
- * @memberof Cite.plugins.input
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Array<Cite.plugins.input~format>} [typeList=[]]
- * @param {InputData} data
+ * @param {Array<module:@citation-js/core.plugins.input~format>} [typeList=[]]
+ * @param {module:@citation-js/core~InputData} data
  *
- * @return {Cite.plugins.input~format} native format
+ * @return {module:@citation-js/core.plugins.input~format} native format
  */
-const matchType = (typeList = [], data) => {
+function matchType (typeList = [], data) {
   for (const type of typeList) {
     if (types[type].predicate(data)) {
       return matchType(types[type].extensions, data) || type
@@ -56,13 +56,14 @@ const matchType = (typeList = [], data) => {
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method type
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {InputData} input
+ * @param {module:@citation-js/core~InputData} input
  *
- * @return {Cite.plugins.input~format} type
+ * @return {module:@citation-js/core.plugins.input~format} type
  */
-export const type = (input) => {
+export function type (input) {
   const dataType = dataTypeOf(input)
 
   // Empty array should be @csl/list+object too
@@ -81,12 +82,13 @@ export const type = (input) => {
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method addTypeParser
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Cite.plugins.input~format} format
- * @param {Cite.plugins.input.TypeParser} typeParser
+ * @param {module:@citation-js/core.plugins.input~format} format
+ * @param {module:@citation-js/core.plugins.input.util.TypeParser} typeParser
  */
-export const addTypeParser = (format, { dataType, predicate, extends: extend }) => {
+export function addTypeParser (format, { dataType, predicate, extends: extend }) {
   // 1. check if any subclass formats are waiting for this format
   let extensions = []
   if (format in unregExts) {
@@ -124,21 +126,25 @@ export const addTypeParser = (format, { dataType, predicate, extends: extend }) 
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method hasTypeParser
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Cite.plugins.input~format} type
+ * @param {module:@citation-js/core.plugins.input~format} type
  *
  * @return {Boolean} type parser is registered
  */
-export const hasTypeParser = type => types.hasOwnProperty(type)
+export function hasTypeParser (type) {
+  return Object.prototype.hasOwnProperty.call(types, type)
+}
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method removeTypeParser
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @param {Cite.plugins.input~format} type
+ * @param {module:@citation-js/core.plugins.input~format} type
  */
-export const removeTypeParser = type => {
+export function removeTypeParser (type) {
   delete types[type]
 
   // Removing orphaned type refs
@@ -156,19 +162,24 @@ export const removeTypeParser = type => {
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method listTypeParser
+ * @memberof module:@citation-js/core.plugins.input
  *
- * @return {Array<Cite.plugins.input~format>} list of registered type parsers
+ * @return {Array<module:@citation-js/core.plugins.input~format>} list of registered type parsers
  */
-export const listTypeParser = () => Object.keys(types)
+export function listTypeParser () {
+  return Object.keys(types)
+}
 
 /**
  * @access public
- * @memberof Cite.plugins.input
+ * @method treeTypeParser
+ * @memberof module:@citation-js/core.plugins.input
  *
  * @return {Object} tree structure
  */
-export const treeTypeParser = /* istanbul ignore next: debugging */ () => {
+/* istanbul ignore next: debugging */
+export function treeTypeParser () {
   const attachNode = name => ({ name, children: types[name].extensions.map(attachNode) })
   return {
     name: 'Type tree',
@@ -183,7 +194,8 @@ export const treeTypeParser = /* istanbul ignore next: debugging */ () => {
  * Validate and parse the format name
  *
  * @access public
- * @memberof Cite.plugins.input
+ * @method typeMatcher
+ * @memberof module:@citation-js/core.plugins.input
  * @type {RegExp}
  */
 export const typeMatcher = /^(?:@(.+?))(?:\/(?:(.+?)\+)?(?:(.+)))?$/

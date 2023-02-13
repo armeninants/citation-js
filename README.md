@@ -55,3 +55,6 @@ Citation.js converts formats like BibTeX, Wikidata JSON and BibJSON to CSL-JSON 
 | [`plugin-doi`](https://github.com/citation-js/citation-js/tree/master/packages/plugin-doi) | Plugin for DOI input for Citation.js |
 | [`plugin-ris`](https://github.com/citation-js/citation-js/tree/master/packages/plugin-ris) | Plugin for RIS formats for Citation.js |
 | [`plugin-wikidata`](https://github.com/citation-js/citation-js/tree/master/packages/plugin-wikidata) | Plugin for Wikidata for Citation.js |
+
+
+Tut vse horosho!!!

@@ -1,4 +1,5 @@
 ADD Information From Stanislav Tonkich
+Гайк разрешил (не принимай этот request)
 
 <p align="center"><img alt="Citation.js" src="https://citation.js.org/static/img/square_logo_medium.png" /></p>
 
